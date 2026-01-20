@@ -1,14 +1,16 @@
 export type UserRole = 'entrepreneur' | 'investor';
+// import { User } from './index';
 
+export type MeetingStatus = 'Pending' | 'Accepted' | 'Rejected';
 export interface User {
   id: string;
   name: string;
   email: string;
   role: UserRole;
-  avatarUrl: string;
-  bio: string;
+  avatarUrl?: string;
+  bio?: string;
   isOnline?: boolean;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface Entrepreneur extends User {
@@ -70,12 +72,27 @@ export interface Document {
 
 export interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string, role: UserRole) => Promise<void>;
-  register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
+  // login: (email: string, password: string, role: UserRole) => Promise<void>;
+  // login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
+  register: (name: string, email: string, password: string, role: UserRole) => Promise<User>;
   logout: () => void;
-  forgotPassword: (email: string) => Promise<void>;
-  resetPassword: (token: string, newPassword: string) => Promise<void>;
+  // forgotPassword: (email: string) => Promise<void>;
+  // resetPassword: (token: string, newPassword: string) => Promise<void>;
   updateProfile: (userId: string, updates: Partial<User>) => Promise<void>;
   isAuthenticated: boolean;
   isLoading: boolean;
+}
+
+
+
+export interface Meeting {
+  _id: string;            // Mongo ID
+  createdBy: User;
+  withUser: User;
+  startTime: string;
+  endTime: string;
+  status: MeetingStatus;
+  createdAt: string;
+  updatedAt: string;
 }

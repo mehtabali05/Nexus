@@ -2,11 +2,17 @@ import bcrypt from "bcrypt";
 import User from "../models/User.model.js";
 import generateToken from "../utils/generateToken.js";
 
+const allowedRoles = ['entrepreneur', 'investor'];
+
 // REGISTER
 export const registerUser = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
 
+    if (!allowedRoles.includes(role)) {
+      return res.status(400).json({ message: "Invalid role" });
+    }
+    
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: "User already exists" });

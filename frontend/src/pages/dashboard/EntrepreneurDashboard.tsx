@@ -1,3 +1,5 @@
+import MeetingService from '../../services/meeting.service';
+import { Meeting } from '../../types';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Users, Bell, Calendar, TrendingUp, AlertCircle, PlusCircle } from 'lucide-react';
@@ -15,6 +17,7 @@ export const EntrepreneurDashboard: React.FC = () => {
   const { user } = useAuth();
   const [collaborationRequests, setCollaborationRequests] = useState<CollaborationRequest[]>([]);
   const [recommendedInvestors, setRecommendedInvestors] = useState(investors.slice(0, 3));
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
   
   useEffect(() => {
     if (user) {
@@ -23,7 +26,36 @@ export const EntrepreneurDashboard: React.FC = () => {
       setCollaborationRequests(requests);
     }
   }, [user]);
+
+  // useEffect(() => {
+  //   const fetchDashboardData = async () => {
+  //     try {
+  //       const meetingData = await MeetingService.getMyMeetings();
+  //       setMeetings(meetingData);
+  //       // ... existing collaboration request fetching
+  //     } catch (error) {
+  //       console.error("Failed to load dashboard data", error);
+  //     }
+  //   };
+  //   fetchDashboardData();
+  // }, [user]);
   
+  useEffect(() => {
+    if (!user) return;
+  
+    const fetchDashboardData = async () => {
+      try {
+        const meetingData = await MeetingService.getMyMeetings();
+        setMeetings(meetingData);
+      } catch (error) {
+        console.error('Failed to load meetings', error);
+      }
+    };
+  
+    fetchDashboardData();
+  }, [user]);
+  
+
   const handleRequestStatusUpdate = (requestId: string, status: 'accepted' | 'rejected') => {
     setCollaborationRequests(prevRequests => 
       prevRequests.map(req => 
@@ -93,7 +125,10 @@ export const EntrepreneurDashboard: React.FC = () => {
               </div>
               <div>
                 <p className="text-sm font-medium text-accent-700">Upcoming Meetings</p>
-                <h3 className="text-xl font-semibold text-accent-900">2</h3>
+                {/* <h3 className="text-xl font-semibold text-accent-900">2</h3> */}
+                <h3 className="text-xl font-semibold text-accent-900">
+                  {meetings.filter(m => m.status === 'Accepted').length}
+                </h3>
               </div>
             </div>
           </CardBody>
